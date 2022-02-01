@@ -36,9 +36,9 @@ const App = () => {
   useEffect(() => {
     const params = {
       gender: allMoviesOptionGender,
-      sort: allMoviesOptionSort
+      sort: allMoviesOptionSort,
     };
-    apiMovies.getMoviesFromApi(params).then(response => {
+    apiMovies.getMoviesFromApi(params).then((response) => {
       setAppMovies(response.movies);
     });
   }, [allMoviesOptionGender, allMoviesOptionSort]);
@@ -50,7 +50,7 @@ const App = () => {
   */
   useEffect(() => {
     if (userId !== '') {
-      apiUser.getProfileFromApi(userId).then(response => {
+      apiUser.getProfileFromApi(userId).then((response) => {
         setUserName(response.name);
         setUserEmail(response.email);
         setUserPassword(response.password);
@@ -65,7 +65,7 @@ const App = () => {
   */
   useEffect(() => {
     if (userId !== '') {
-      apiUser.getUserMoviesFromApi(userId).then(response => {
+      apiUser.getUserMoviesFromApi(userId).then((response) => {
         setUserMovies(response.movies);
       });
     }
@@ -76,11 +76,11 @@ const App = () => {
   Con este evento enviamos los datos del login al servidor cuando la usuaria lanza el evento.
   Como queremos que el back devuelva el id de la usuaria sendLoginToApi recibe el email y la contraseña que ella haya escrito.
   */
-  const sendLoginToApi = loginData => {
+  const sendLoginToApi = (loginData) => {
     // Limpiamos el error antes de enviar los datos al API
     setLoginErrorMessage('');
     // Enviamos los datos al API
-    apiUser.sendLoginToApi(loginData).then(response => {
+    apiUser.sendLoginToApi(loginData).then((response) => {
       if (response.success === true) {
         setUserId(response.userId);
         // Si la usuaria introduce bien sus datos redireccionamos desde la página de login al inicio de la página
@@ -97,11 +97,11 @@ const App = () => {
   Con este evento enviamos los datos del sign up al servidor cuando la usuaria lanza el evento.
   Como queremos que el back devuelva el id de la usuaria sendSingUpToApi recibe el email y la contraseña que ella haya escrito.
   */
-  const sendSingUpToApi = data => {
+  const sendSingUpToApi = (data) => {
     // Limpiamos el error antes de enviar los datos al API
     setSignUpErrorMessage('');
     // Enviamos los datos al API
-    apiUser.sendSingUpToApi(data).then(response => {
+    apiUser.sendSingUpToApi(data).then((response) => {
       if (response.success === true) {
         setUserId(response.userId);
         // Si la usuaria introduce bien sus datos redireccionamos desde la página de signup al inicio de la página
@@ -122,7 +122,7 @@ const App = () => {
   const sendProfileToApi = (userId, data) => {
     apiUser.sendProfileToApi(userId, data).then(() => {
       // Después de enviar los datos al servidor los volvemos a pedir al servidor para tenerlos actualizados
-      apiUser.getProfileFromApi(userId).then(response => {
+      apiUser.getProfileFromApi(userId).then((response) => {
         setUserName(response.name);
         setUserEmail(response.email);
         setUserPassword(response.password);
@@ -145,7 +145,8 @@ const App = () => {
   Aquí solo guardamos los datos en el estado.
   En el primer useEffect le decimos que cuando estos datos cambien vuelva a pedir las películas al API.
   */
-  const handleAllMoviesOptions = data => {
+
+  const handleAllMoviesOptions = (data) => {
     if (data.key === 'gender') {
       setAllMoviesOptionGender(data.value);
     } else if (data.key === 'sort') {
@@ -174,10 +175,16 @@ const App = () => {
           <MyMovies movies={userMovies} />
         </Route>
         <Route path="/login">
-          <Login loginErrorMessage={loginErrorMessage} sendLoginToApi={sendLoginToApi} />
+          <Login
+            loginErrorMessage={loginErrorMessage}
+            sendLoginToApi={sendLoginToApi}
+          />
         </Route>
         <Route path="/signup">
-          <SignUp signUpErrorMessage={signUpErrorMessage} sendSingUpToApi={sendSingUpToApi} />
+          <SignUp
+            signUpErrorMessage={signUpErrorMessage}
+            sendSingUpToApi={sendSingUpToApi}
+          />
         </Route>
         <Route path="/profile">
           <Profile
