@@ -3,6 +3,9 @@ const cors = require('cors');
 const moviesJson = require('../web/src/data/movies.json');
 const Database = require('better-sqlite3');
 
+//BASE DE DATOS
+const db = new Database('./src/db/database.db', { verbose: console.log });
+
 // create and config server
 const server = express();
 server.use(cors());
@@ -46,12 +49,14 @@ server.post('/sign-up', (req, res) => {
   const password = req.body.password;
 
   //ahora verificamos si existe la usuario
-  const queryUser = userdb.prepare('SELECT * FROM user WHERE email=?');
-  const foundUser = queryUser.run(email);
+  const queryUser = db.prepare('SELECT * FROM user WHERE email=?');
+  const foundUser = queryUser.get(email); //antes habia run, hemos cambiado las bases de datos de dos a una con dos tablas, pero no entendemos porque antes de
+
+  console.log(foundUser);
 
   if (foundUser === undefined) {
     // ahora creamos la query para isertar a las usuarias.
-    const query = userdb.prepare(
+    const query = db.prepare(
       'INSERT INTO user (email, password) VALUES (?,?) '
     );
     //se utiliza .run xq queremos añadir registros.
@@ -66,6 +71,19 @@ server.post('/sign-up', (req, res) => {
       message: 'Error email ya existe',
     });
   }
+});
+
+server.get('/user/profile', (req, res) => {
+  console.log('estamos en user profile');
+
+  const user = req.body.email;
+  console.log(id);
+
+  const query = db.prepare(
+    'UPDATE user SET email = ?, password = ?, name = ? WHERE userId = ?'
+  );
+
+  res.json({ success: true });
 });
 
 //Servidor de estaticos
@@ -83,8 +101,3 @@ server.get('/movies/:moviesId', (req, res) => {
 
   res.render('movie', moviesData);
 });
-
-//BASE DE DATOS
-const db = new Database('./src/db/database.db', { verbose: console.log });
-
-const userdb = new Database('./src/db/users.db', { verbose: console.log });
