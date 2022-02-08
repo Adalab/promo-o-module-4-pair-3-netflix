@@ -73,11 +73,11 @@ server.post('/sign-up', (req, res) => {
   }
 });
 
-server.get('/user/profile', (req, res) => {
+server.post('/user/profile', (req, res) => {
   console.log('estamos en user profile');
 
   const user = req.body.email;
-  console.log(id);
+  console.log(req.headers);
 
   const query = db.prepare(
     'UPDATE user SET email = ?, password = ?, name = ? WHERE userId = ?'

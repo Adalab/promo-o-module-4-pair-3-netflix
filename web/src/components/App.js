@@ -188,6 +188,7 @@ const App = () => {
         </Route>
         <Route path="/profile">
           <Profile
+            userId={userId}
             userName={userName}
             userEmail={userEmail}
             userPassword={userPassword}
