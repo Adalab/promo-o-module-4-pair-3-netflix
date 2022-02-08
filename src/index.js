@@ -17,7 +17,7 @@ server.listen(serverPort, () => {
 
 server.get('/movies', (req, res) => {
   // preparamos y ejecutamos la query
-  const query = db.prepare('SELECT * FROM movies ORDER BY title ?');
+  const query = db.prepare('SELECT * FROM movies ORDER BY title= ?');
 
   const movies = query.all(req.query.sort);
   // respondemos a la petición con los datos que ha devuelto la base de datos
@@ -28,6 +28,27 @@ server.get('/movies', (req, res) => {
   };
   res.json(response);
 });
+
+server.post("/sign-up", (req, res) => {
+
+  // nos traemos el body (data)
+  const email = req.body.email 
+  const password = req.body.password
+
+  // ahora creamos la query para isertar a las usuarias. 
+
+  const query = userdb.prepare('INSERT INTO user (email, password) VALUES (?,?) ')
+  //se utiliza .run xq queremos añadir registros. 
+  const userInsert = query.run(email, password);
+
+res.json({
+ success: true,
+ userId: userInsert.lastInsertRowid,
+
+})
+
+
+})
 
 //Servidor de estaticos
 const staticServerPath = './src/public-react';
@@ -47,3 +68,5 @@ server.get('/movies/:moviesId', (req, res) => {
 
 //BASE DE DATOS
 const db = new Database('./src/db/database.db', { verbose: console.log });
+
+const userdb = new Database('./src/db/users.db', { verbose: console.log });
