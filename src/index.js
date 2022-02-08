@@ -17,9 +17,20 @@ server.listen(serverPort, () => {
 
 server.get('/movies', (req, res) => {
   // preparamos y ejecutamos la query
-  const query = db.prepare('SELECT * FROM movies ORDER BY title= ?');
+  let movies;
 
-  const movies = query.all(req.query.sort);
+  if (req.query.gender === '') {
+    const query = db.prepare(
+      `SELECT * FROM movies ORDER BY title ${req.query.sort}`
+    );
+    movies = query.all();
+  } else {
+    const query = db.prepare(
+      `SELECT * FROM movies WHERE gender=? ORDER BY title ${req.query.sort}`
+    );
+    movies = query.all(req.query.gender);
+  }
+
   // respondemos a la petición con los datos que ha devuelto la base de datos
 
   const response = {
@@ -29,26 +40,33 @@ server.get('/movies', (req, res) => {
   res.json(response);
 });
 
-server.post("/sign-up", (req, res) => {
-
+server.post('/sign-up', (req, res) => {
   // nos traemos el body (data)
-  const email = req.body.email 
-  const password = req.body.password
+  const email = req.body.email;
+  const password = req.body.password;
 
-  // ahora creamos la query para isertar a las usuarias. 
+  //ahora verificamos si existe la usuario
+  const queryUser = userdb.prepare('SELECT * FROM user WHERE email=?');
+  const foundUser = queryUser.run(email);
 
-  const query = userdb.prepare('INSERT INTO user (email, password) VALUES (?,?) ')
-  //se utiliza .run xq queremos añadir registros. 
-  const userInsert = query.run(email, password);
-
-res.json({
- success: true,
- userId: userInsert.lastInsertRowid,
-
-})
-
-
-})
+  if (foundUser === undefined) {
+    // ahora creamos la query para isertar a las usuarias.
+    const query = userdb.prepare(
+      'INSERT INTO user (email, password) VALUES (?,?) '
+    );
+    //se utiliza .run xq queremos añadir registros.
+    const userInsert = query.run(email, password);
+    res.json({
+      success: true,
+      userId: userInsert.lastInsertRowid,
+    });
+  } else {
+    res.json({
+      success: false,
+      message: 'Error email ya existe',
+    });
+  }
+});
 
 //Servidor de estaticos
 const staticServerPath = './src/public-react';
