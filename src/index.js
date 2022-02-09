@@ -1,9 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 const moviesJson = require('../web/src/data/movies.json');
+
+//aqui configuramos la base de datos instalando la dependencia de npm better-sqlite3
 const Database = require('better-sqlite3');
 
 //BASE DE DATOS
+
+//cramos una base de datos con dos tablas primero con las peliculas y luego le añadimos las usuarias
 const db = new Database('./src/db/database.db', { verbose: console.log });
 
 // create and config server
@@ -18,6 +22,7 @@ server.listen(serverPort, () => {
   console.log(`Server listening at http://localhost:${serverPort}`);
 });
 
+//Esto es un endpoint para pedir las peliculas y ademas tenemos los "filtros" para ordenar por titulo y por genero
 server.get('/movies', (req, res) => {
   // preparamos y ejecutamos la query
   let movies;
@@ -35,13 +40,15 @@ server.get('/movies', (req, res) => {
   }
 
   // respondemos a la petición con los datos que ha devuelto la base de datos
-
+  //antes teniamos los datos por JSON y más adelante los pasamos a una base de datos
   const response = {
     success: true,
     movies: movies,
   };
   res.json(response);
 });
+
+//Este es el registro de nuevas usarias en el back, donde recoge los datos del front a traves de body params y tambien comprueba si la usuaria ya ha sido registrada a traves de un if
 
 server.post('/sign-up', (req, res) => {
   // nos traemos el body (data)
@@ -86,10 +93,8 @@ server.post('/user/profile', (req, res) => {
   res.json({ success: true });
 });
 
-//Servidor de estaticos
-const staticServerPath = './src/public-react';
-server.use(express.static(staticServerPath));
-
+//Escucha las peticiones para crear un motor de plantillas
+//En views/movie.ejs creamos el motor de plantillas para renderizar las peliculas y su información
 server.get('/movies/:moviesId', (req, res) => {
   const requestParamsMovie = req.params.moviesId;
 
@@ -101,3 +106,10 @@ server.get('/movies/:moviesId', (req, res) => {
 
   res.render('movie', moviesData);
 });
+//Servidor de estaticos
+//Un servidor de ficheros estáticos es un servidor que devuelve al navegador que los solicita ficheros sin modificar, independientemente de quién, cuándo o desde dónde los pida
+//Este endpoint siempre, siempre, siempre debe ser el último, por detrás del resto de endpoints y de los servidores de estáticos.
+
+//Esto sirve para conectar el servidor de react (3000) con el servidor back (4000)
+const staticServerPath = './src/public-react';
+server.use(express.static(staticServerPath));
