@@ -95,6 +95,12 @@ server.post('/user/profile', (req, res) => {
 
 //Escucha las peticiones para crear un motor de plantillas
 //En views/movie.ejs creamos el motor de plantillas para renderizar las peliculas y su información
+
+//Está esperando a que desde el navegador se le solicite un fichero (con un endpoint). Cuando esto sucede, el endpoint:
+// Coge una plantilla.
+// Obtiene los datos, generalmente desde una base de datos. En esta lección todavía no sabemos cómo trabajar con bases de datos, así que vamos a obtenerlos de un JSON.
+// Mete los datos en la plantilla. A este proceso se le llama renderizado.
+// Y devuelve la plantilla personalizada al navegador para que la usuaria la visualice.
 server.get('/movies/:moviesId', (req, res) => {
   const requestParamsMovie = req.params.moviesId;
 
@@ -109,6 +115,8 @@ server.get('/movies/:moviesId', (req, res) => {
 //Servidor de estaticos
 //Un servidor de ficheros estáticos es un servidor que devuelve al navegador que los solicita ficheros sin modificar, independientemente de quién, cuándo o desde dónde los pida
 //Este endpoint siempre, siempre, siempre debe ser el último, por detrás del resto de endpoints y de los servidores de estáticos.
+
+//Cuando se entra en la página http://localhost:3000, no estamos indicando ningún fichero en la URL. Por ello el servidor de estáticos busca en public/ si existe el fichero index.html, lo encuentra y lo devuelve.
 
 //Esto sirve para conectar el servidor de react (3000) con el servidor back (4000)
 const staticServerPath = './src/public-react';
